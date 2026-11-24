@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>محتوى محمي</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--text:#222;--muted:#777;--accent:#2f6f5e;--err:#b3261e;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161816;--card:#222522;--text:#eee;--muted:#999;--accent:#6fc4aa;--err:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#161816;--card:#222522;--text:#eee;--muted:#999;--accent:#6fc4aa;--err:#ff8a80;color-scheme:dark}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px}
+.card{background:var(--card);border-radius:18px;padding:28px 22px;width:100%;max-width:380px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.icon{font-size:42px}
+h1{font-size:20px;margin:8px 0}
+p{color:var(--muted);margin:6px 0 18px}
+input{width:100%;box-sizing:border-box;padding:12px;font-size:20px;text-align:center;letter-spacing:4px;border:1px solid var(--muted);border-radius:10px;background:transparent;color:var(--text)}
+button{margin-top:12px;width:100%;padding:12px;font-size:16px;border:0;border-radius:10px;background:var(--accent);color:#fff}
+#err{color:var(--err);min-height:20px;margin-top:10px;font-size:14px}
+#content{display:none;line-height:1.8;font-size:17px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div id="lock">
+    <div class="icon">🔒</div>
+    <h1>هذا المحتوى محمي</h1>
+    <p>أدخل الرمز لفتحه</p>
+    <input id="code" type="password" inputmode="numeric" autocomplete="off" placeholder="••••">
+    <button id="go">فتح</button>
+    <div id="err"></div>
+  </div>
+  <div id="content">
+    <div class="icon">✅</div>
+    <h1>تم الفتح</h1>
+  </div>
+</div>
+<script>
+const HASH="81a83544cf93c245178cbc1620030f1123f435af867c79d87135983c52ab39d9"; // SHA-256 للرمز 2000
+async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function check(){
+  const v=document.getElementById("code").value.trim();
+  if(await sha(v)===HASH){
+    document.getElementById("lock").style.display="none";
+    document.getElementById("content").style.display="block";
+  }else{
+    document.getElementById("err").textContent="الرمز غير صحيح";
+  }
+}
+document.getElementById("go").addEventListener("click",check);
+document.getElementById("code").addEventListener("keydown",e=>{if(e.key==="Enter")check()});
+</script>
+</body>
+</html>
